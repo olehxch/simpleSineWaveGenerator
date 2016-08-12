@@ -5,7 +5,6 @@ Current Issues:
 * No mute button
 * Sine wave is generated over and over again when buffer is filled (it is not continues, so may produce glitches)
 * Time variable is not cleared after period ends (may produce overflows as it is float)
-* Time variable adds delta time step after every assigning at **buffer[sample] = value** (sparses sine from true mono to stereo)
 
 ## Screenshot of this small application
 
