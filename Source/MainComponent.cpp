@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file was auto-generated!
-
-  ==============================================================================
-*/
-
 #ifndef MAINCOMPONENT_H_INCLUDED
 #define MAINCOMPONENT_H_INCLUDED
 
@@ -15,19 +7,19 @@
 
 //==============================================================================
 /*
-    This component lives inside our window, and this is where you should put all
-    your controls and content.
+This component lives inside our window, and this is where you should put all
+your controls and content.
 */
-class MainContentComponent   : public AudioAppComponent, public Slider::Listener
+class MainContentComponent : public AudioAppComponent, public Slider::Listener
 {
 public:
     //==============================================================================
     MainContentComponent()
     {
-        setSize (480, 120);
+        setSize(480, 120);
 
         // specify the number of input and output channels that we want to open
-        setAudioChannels (2, 2);
+        setAudioChannels(2, 2);
 
         // volume slider
         addAndMakeVisible(volumeSlider);
@@ -74,17 +66,14 @@ public:
     }
 
     //==============================================================================
-    void prepareToPlay (int samplesPerBlockExpected, double sampleRate) override
+    void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override
     {
         // This function will be called when the audio device is started, or when
         // its settings (i.e. sample rate, block size, etc) are changed.
-
         // You can use this function to initialise any resources you might need,
         // but be careful - it will be called on the audio thread, not the GUI thread.
-
         // For more details, see the help for AudioProcessor::prepareToPlay()
 
-        // initialize values
         m_amplitude = 0.5;
         m_frequency = 500;
         m_phase = 0.0;
@@ -92,12 +81,10 @@ public:
         m_deltaTime = 1 / sampleRate;
     }
 
-    void getNextAudioBlock (const AudioSourceChannelInfo& bufferToFill) override
+    void getNextAudioBlock(const AudioSourceChannelInfo& bufferToFill) override
     {
         // Your audio-processing code goes here!
-
         // For more details, see the help for AudioProcessor::getNextAudioBlock()
-
         // Right now we are not producing any data, in which case we need to clear the buffer
         // (to prevent the output of random noise)
         //bufferToFill.clearActiveBufferRegion();
@@ -111,12 +98,11 @@ public:
 
             for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {
                 float f = m_frequency;
-                float value = m_amplitude * sin(2*double_Pi*f*m_time + m_phase);
+                float value = m_amplitude * sin(2 * double_Pi*f*m_time + m_phase);
 
                 buffer[sample] = value;
                 m_time += m_deltaTime;
             }
-
         }
     }
 
@@ -124,18 +110,14 @@ public:
     {
         // This will be called when the audio device stops, or when it is being
         // restarted due to a setting change.
-
         // For more details, see the help for AudioProcessor::releaseResources()
     }
 
     //==============================================================================
-    void paint (Graphics& g) override
+    void paint(Graphics& g) override
     {
         // (Our component is opaque, so we must completely fill the background with a solid colour)
-        g.fillAll (Colours::white);
-
-
-        // You can add your drawing code here!
+        g.fillAll(Colours::white);
     }
 
     void resized() override
@@ -148,7 +130,6 @@ public:
         phaseSlider.setBounds(sliderLeft, 50, getWidth() - sliderLeft - 10, 20);
         freqSlider.setBounds(sliderLeft, 80, getWidth() - sliderLeft - 10, 20);
     }
-
 
 private:
     //==============================================================================
@@ -168,12 +149,10 @@ private:
     Label freqLabel;
     Label phaseLabel;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainContentComponent)
 };
 
-
 // (This function is called by the app startup code to create our main component)
-Component* createMainContentComponent()     { return new MainContentComponent(); }
-
+Component* createMainContentComponent() { return new MainContentComponent(); }
 
 #endif  // MAINCOMPONENT_H_INCLUDED
