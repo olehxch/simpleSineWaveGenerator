@@ -5,6 +5,8 @@
 #include "juce_gui_basics\widgets\juce_Slider.h"
 #include "juce_gui_basics\widgets\juce_Label.h"
 
+#include <limits>
+
 //==============================================================================
 /*
 This component lives inside our window, and this is where you should put all
@@ -23,9 +25,9 @@ public:
 
         // volume slider
         addAndMakeVisible(volumeSlider);
-        volumeSlider.setRange(0.0, 1.0);
-        volumeSlider.setTextValueSuffix("");
-        volumeSlider.setValue(0.25);
+        volumeSlider.setRange(-96, 6);
+        volumeSlider.setTextValueSuffix(" db");
+        volumeSlider.setValue(-6);
         volumeSlider.addListener(this);
         //volumeSlider.setSkewFactorFromMidPoint(0.5);
 
@@ -60,9 +62,17 @@ public:
     }
 
     void sliderValueChanged(Slider *slider) {
-        m_amplitude = (float)volumeSlider.getValue();
-        m_frequency = (float)freqSlider.getValue();
-        m_phase = (float)phaseSlider.getValue();
+        if (slider == &volumeSlider) {
+            m_amplitude = pow(10, ((float)volumeSlider.getValue() / 20.0));
+        }
+
+        if (slider == &freqSlider) {
+            m_frequency = (float)freqSlider.getValue();
+        }
+
+        if (slider == &phaseSlider) {
+            m_phase = (float)phaseSlider.getValue();
+        }
     }
 
     //==============================================================================
@@ -83,6 +93,10 @@ public:
 
     void getNextAudioBlock(const AudioSourceChannelInfo& bufferToFill) override
     {
+        if (m_time >= std::numeric_limits<float>::max()) {
+            m_time = 0.0;
+        }
+
         // generate sin wave in mono
         float *monoBuffer = new float[bufferToFill.numSamples];
         float f = m_frequency;
@@ -95,7 +109,6 @@ public:
         }
 
         // iterate over all available output channels
-        m_time = 0;
         for (int channel = 0; channel < bufferToFill.buffer->getNumChannels(); ++channel)
         {
             // Get a pointer to the start sample in the buffer for this audio output channel
