@@ -57,9 +57,9 @@ public:
 
         // mute button
         addAndMakeVisible(m_muteButton);
-		m_muteButton.setButtonText("Mute");
-		m_muteButton.addListener(this);
-		m_muteButton.setEnabled(true);
+        m_muteButton.setButtonText("Mute");
+        m_muteButton.addListener(this);
+        m_muteButton.setEnabled(true);
     }
 
     ~MainContentComponent()
@@ -70,7 +70,7 @@ public:
     void buttonClicked(Button* button) override
     {
         if (button == &m_muteButton) {
-			m_mute = !m_mute;
+            m_mute = !m_mute;
         }
     }
 
@@ -80,7 +80,7 @@ public:
         }
 
         if (slider == &freqSlider) {
-			m_frequency = (float)freqSlider.getValue();
+            m_frequency = (float)freqSlider.getValue();
         }
 
         if (slider == &phaseSlider) {
@@ -112,15 +112,15 @@ public:
 
         float *monoBuffer = new float[bufferToFill.numSamples];
         
-		if (m_mute) return bufferToFill.clearActiveBufferRegion();
+        if (m_mute) return bufferToFill.clearActiveBufferRegion();
 
-		// generate sin wave in mono
-		for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {
-			float value = m_amplitude * sin(2 * double_Pi * m_frequency * m_time + m_phase);
+        // generate sin wave in mono
+        for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {
+            float value = m_amplitude * sin(2 * double_Pi * m_frequency * m_time + m_phase);
 
-			monoBuffer[sample] = value;
-			m_time += m_deltaTime;
-		}
+            monoBuffer[sample] = value;
+            m_time += m_deltaTime;
+        }
 
         // iterate over all available output channels
         for (int channel = 0; channel < bufferToFill.buffer->getNumChannels(); ++channel)
@@ -157,7 +157,7 @@ public:
         volumeSlider.setBounds(sliderLeft, 20, getWidth() - sliderLeft - 10, 20);
         phaseSlider.setBounds(sliderLeft, 50, getWidth() - sliderLeft - 10, 20);
         freqSlider.setBounds(sliderLeft, 80, getWidth() - sliderLeft - 10, 20);
-		m_muteButton.setBounds(10, 110, getWidth() - 20, 20);
+        m_muteButton.setBounds(10, 110, getWidth() - 20, 20);
     }
 
 private:
@@ -179,7 +179,7 @@ private:
     Label phaseLabel;
 
     TextButton m_muteButton;
-	bool m_mute;
+    bool m_mute;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainContentComponent)
 };
