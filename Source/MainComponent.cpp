@@ -56,10 +56,10 @@ public:
         freqLabel.attachToComponent(&freqSlider, true);
 
         // mute button
-        addAndMakeVisible(m_mute);
-        m_mute.setButtonText("Mute");
-        m_mute.addListener(this);
-        m_mute.setEnabled(true);
+        addAndMakeVisible(m_muteButton);
+		m_muteButton.setButtonText("Mute");
+		m_muteButton.addListener(this);
+		m_muteButton.setEnabled(true);
     }
 
     ~MainContentComponent()
@@ -69,24 +69,18 @@ public:
 
     void buttonClicked(Button* button) override
     {
-        if (button == &m_mute) {
-            if (m_amplitude > 0.0) {
-                m_prevVolume = m_amplitude;
-                m_amplitude = 0.0;
-            } else {
-                m_amplitude = m_prevVolume;
-            }
+        if (button == &m_muteButton) {
+			m_mute = !m_mute;
         }
     }
 
     void sliderValueChanged(Slider *slider) {
         if (slider == &volumeSlider) {
             m_amplitude = pow(10, ((float)volumeSlider.getValue() / 20.0));
-            m_prevVolume = m_amplitude;
         }
 
         if (slider == &freqSlider) {
-            m_targetFrequency = (float)freqSlider.getValue();
+			m_frequency = (float)freqSlider.getValue();
         }
 
         if (slider == &phaseSlider) {
@@ -104,8 +98,7 @@ public:
         // For more details, see the help for AudioProcessor::prepareToPlay()
 
         m_amplitude = 0.5;
-        m_frequency = 500;
-        m_targetFrequency = 500;
+        m_frequency = 500.0;
         m_phase = 0.0;
         m_time = 0.0;
         m_deltaTime = 1 / sampleRate;
@@ -118,36 +111,16 @@ public:
         }
 
         float *monoBuffer = new float[bufferToFill.numSamples];
-        float f = m_frequency;
+        
+		if (m_mute) return bufferToFill.clearActiveBufferRegion();
 
-        // TODO fix it later
-        // do not use target freq now
-        m_frequency = m_targetFrequency;
+		// generate sin wave in mono
+		for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {
+			float value = m_amplitude * sin(2 * double_Pi * m_frequency * m_time + m_phase);
 
-        // check if target frequency was changed
-        if (m_frequency != m_targetFrequency) {
-            m_deltaFrequency = m_targetFrequency - m_frequency / bufferToFill.numSamples;
-
-            for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {
-                float value = m_amplitude * sin(2 * double_Pi*f*m_time + m_phase);
-
-                monoBuffer[sample] = value;
-                m_time += m_deltaTime;
-
-                m_frequency += m_deltaFrequency;
-            }
-
-            m_frequency = m_targetFrequency;
-        }
-        else {
-            // generate sin wave in mono
-            for (int sample = 0; sample < bufferToFill.numSamples; ++sample) {
-                float value = m_amplitude * sin(2 * double_Pi*f*m_time + m_phase);
-
-                monoBuffer[sample] = value;
-                m_time += m_deltaTime;
-            }
-        }
+			monoBuffer[sample] = value;
+			m_time += m_deltaTime;
+		}
 
         // iterate over all available output channels
         for (int channel = 0; channel < bufferToFill.buffer->getNumChannels(); ++channel)
@@ -184,7 +157,7 @@ public:
         volumeSlider.setBounds(sliderLeft, 20, getWidth() - sliderLeft - 10, 20);
         phaseSlider.setBounds(sliderLeft, 50, getWidth() - sliderLeft - 10, 20);
         freqSlider.setBounds(sliderLeft, 80, getWidth() - sliderLeft - 10, 20);
-        m_mute.setBounds(10, 110, getWidth() - 20, 20);
+		m_muteButton.setBounds(10, 110, getWidth() - 20, 20);
     }
 
 private:
@@ -196,11 +169,6 @@ private:
     float m_phase;
     float m_time;
     float m_deltaTime;
-    
-    float m_targetFrequency;
-    float m_deltaFrequency;
-
-    float m_prevVolume;
 
     // GUI
     Slider volumeSlider;
@@ -210,7 +178,8 @@ private:
     Label freqLabel;
     Label phaseLabel;
 
-    TextButton m_mute;
+    TextButton m_muteButton;
+	bool m_mute;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainContentComponent)
 };
