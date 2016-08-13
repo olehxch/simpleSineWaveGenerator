@@ -3,4 +3,5 @@ This is a simple sine wave generator project. It can be used as a starting point
 
 ## Screenshot of this small application
 
-![sgen](https://cloud.githubusercontent.com/assets/2100323/17632952/bc8e440e-60d3-11e6-851c-abef9c71d85e.PNG)
+![2](https://cloud.githubusercontent.com/assets/2100323/17643169/05ffebf6-616a-11e6-9a58-8ce22b44b19f.PNG)
+
